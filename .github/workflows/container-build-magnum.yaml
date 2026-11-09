@@ -44,6 +44,11 @@ on:
         required: false
         default: 'https://opendev.org/openstack/magnum-capi-helm'
         type: string
+      osClusterApiDriverVersion:
+        description: 'Version of the vexxhost magnum-cluster-api driver to add from PyPI (e.g. 0.39.0); empty skips it'
+        required: false
+        default: ''
+        type: string
       image-tag-suffix:
         description: 'Tag suffix used instead of "latest", e.g. a short name for a custom plugin build'
         required: false
@@ -54,6 +59,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}/magnum
   project_version: ${{ github.event.inputs.project-version }}
   capi_plugin_repo: ${{ github.event.inputs.osCapiPluginRepo || 'https://opendev.org/openstack/magnum-capi-helm' }}
+  cluster_api_driver_version: ${{ github.event.inputs.osClusterApiDriverVersion }}
   tag_suffix: ${{ github.event.inputs.image-tag-suffix }}
   # NOTE(cloudnull): This is used to parse the workflow_dispatch inputs, sadly the inputs are not available in the
   #                   workflow_dispatch event, so they're being stored in the environment variables. This is a
@@ -132,6 +138,7 @@ jobs:
             OS_CONSTRAINTS=${{ matrix.openstack-constraints }}
             OS_CAPI_PLUGIN_VERSION=${{ matrix.osCapiPluginTag }}
             OS_CAPI_PLUGIN_REPO=${{ env.capi_plugin_repo }}
+            OS_CLUSTER_API_DRIVER_VERSION=${{ env.cluster_api_driver_version }}
             CACHEBUST=${{ github.run_id }}-${{ github.run_attempt }}
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.35.0  # using latest trivy scanner
@@ -191,4 +198,5 @@ jobs:
             OS_CONSTRAINTS=${{ matrix.openstack-constraints }}
             OS_CAPI_PLUGIN_VERSION=${{ matrix.osCapiPluginTag }}
             OS_CAPI_PLUGIN_REPO=${{ env.capi_plugin_repo }}
+            OS_CLUSTER_API_DRIVER_VERSION=${{ env.cluster_api_driver_version }}
             CACHEBUST=${{ github.run_id }}-${{ github.run_attempt }}

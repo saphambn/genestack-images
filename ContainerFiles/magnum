@@ -9,6 +9,9 @@ ARG OS_VERSION=master
 ARG OS_CONSTRAINTS=master
 ARG OS_CAPI_PLUGIN_VERSION=master
 ARG OS_CAPI_PLUGIN_REPO=https://opendev.org/openstack/magnum-capi-helm
+# Optional vexxhost magnum-cluster-api driver (PyPI version, e.g. 0.39.0).
+# Empty (default) means the driver is not installed.
+ARG OS_CLUSTER_API_DRIVER_VERSION=""
 RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update && apt-get upgrade -y \
   && apt-get install --no-install-recommends -y \
@@ -39,6 +42,13 @@ RUN /var/lib/openstack/bin/pip install --constraint https://opendev.org/openstac
                                        PyMySQL \
                                        python-memcached \
                                        uwsgi
+# The vexxhost driver ships a Rust extension; --only-binary forces the prebuilt
+# abi3 manylinux wheel so the build does not need a Rust toolchain.
+RUN if [ -n "${OS_CLUSTER_API_DRIVER_VERSION}" ]; then \
+      /var/lib/openstack/bin/pip install --constraint https://opendev.org/openstack/requirements/raw/branch/${OS_CONSTRAINTS}/upper-constraints.txt \
+                                         --only-binary magnum-cluster-api \
+                                         "magnum-cluster-api==${OS_CLUSTER_API_DRIVER_VERSION}"; \
+    fi
 
 COPY scripts/magnum-cve-patching.sh /opt/
 RUN bash /opt/magnum-cve-patching.sh

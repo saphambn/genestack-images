@@ -27,6 +27,8 @@ graph LR
 | OS_VERSION | master |
 | OS_CONSTRAINTS | master |
 | OS_CAPI_PLUGIN_VERSION | master |
+| OS_CAPI_PLUGIN_REPO | https://opendev.org/openstack/magnum-capi-helm |
+| OS_CLUSTER_API_DRIVER_VERSION | "" (vexxhost magnum-cluster-api not installed) |
 
 ??? example "Build Command"
 
